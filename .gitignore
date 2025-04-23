@@ -13,3 +13,7 @@ kernel/*.o
 kernel/*.a
 kernel/vmlinux*
 
+nonos.iso
+initramfs.cpio.gz
+*.img
+*.bin
