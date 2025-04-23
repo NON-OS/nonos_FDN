@@ -17,3 +17,7 @@ nonos.iso
 initramfs.cpio.gz
 *.img
 *.bin
+nonos.iso
+initramfs.cpio.gz
+*.img
+*.bin
