@@ -37,18 +37,20 @@ NØNOS is a zero-trust, stateless, terminal-native OS designed for anonymous ope
 
 ---
 ## Folders Structure
-nonos-os/
-├── boot/               # Compiled kernel (bzImage), initrd, and bootloader links
-├── configs/            # GRUB configs, system boot params, kernel flags
-├── docs/               # Documentation, dev notes, whitepaper drafts
-├── initramfs/          # Custom init logic, BusyBox scripts, /init
-├── iso/                # Live ISO output structure and supporting files
-├── kernel/             # Linux kernel source and .config used for NØNOS
-├── modules/            # Optional or experimental kernel modules
-├── packages/           # Custom .deb packages or local app builds
-├── scripts/            # QEMU launchers, ISO builders, utility tools
-├── nonos-rootfs.img    # (excluded) Root filesystem image — see download link
-├── README.md           # You’re here
+<pre>nonos-os/
+├── boot/             # Compiled kernel (bzImage), initrd, bootloader links
+├── configs/          # GRUB configs, system boot params, kernel flags
+├── docs/             # Documentation, dev notes, whitepaper drafts
+├── initramfs/        # Custom init logic, BusyBox scripts, /init
+├── iso/              # Live ISO output structure and supporting files
+├── kernel/           # Linux kernel source and .config used for NØNOS
+├── modules/          # Optional or experimental kernel modules
+├── packages/         # Custom .deb packages or local app builds
+├── scripts/          # QEMU launchers, ISO builders, helper tools
+├── nonos-rootfs.img  # (excluded) Root filesystem image — see download link
+├── README.md         # You’re here
+└── WHITEPAPER.md     # System architecture, tokenomics, governance
+</pre>
 
 ## Getting Started
 
