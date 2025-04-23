@@ -1,1 +1,15 @@
 nonos-rootfs.img
+
+# Ignore build artifacts
+*.iso
+*.cpio.gz
+initramfs/initramfs.cpio.gz
+
+# Ignore BusyBox source if just used for build
+busybox/
+
+# Ignore build output inside kernel dir
+kernel/*.o
+kernel/*.a
+kernel/vmlinux*
+
