@@ -1,0 +1,29 @@
+#!/bin/busybox sh
+
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+
+clear
+echo ""
+echo "[NØNOS] Secure Init Environment Ready"
+echo ""
+
+# Define glowing color gradient for top layer
+C1="\033[38;2;0;180;255m"
+C2="\033[38;2;0;220;255m"
+C3="\033[38;2;0;255;255m"
+NC="\033[0m"
+
+echo -e "${C1} ███╗   ██╗ ${C2}██████╗ ${C3} ███╗   ██╗ ${C1}██████╗ ${C2}███████╗"
+echo -e "${C2} ████╗  ██║${C3}██╔═══██╗${C1}████╗  ██║${C2}██╔═══██╗${C3}██╔════╝"
+echo -e "${C3} ██╔██╗ ██║${C1}██║   ██║${C2}██╔██╗ ██║${C3}██║   ██║${C1}███████╗"
+echo -e "${C1} ██║╚██╗██║${C2}██║   ██║${C3}██║╚██╗██║${C1}██║   ██║${C2}╚════██║"
+echo -e "${C2} ██║ ╚████║${C3}╚██████╔╝${C1}██║ ╚████║${C2}╚██████╔╝${C3}███████║"
+echo -e "${C3} ╚═╝  ╚═══╝ ${C1}╚═════╝ ${C2} ╚═╝  ╚═══╝ ${C3}╚═════╝ ${C1}╚══════╝${NC}"
+
+echo ""
+echo "[NØNOS INIT] Dropping to shell..."
+echo ""
+
+exec /bin/sh
