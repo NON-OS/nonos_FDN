@@ -1,0 +1,30 @@
+# NØNOS GRUB Theme Configuration
+
+title-text: "NØNOS Secure Bootloader"
+title-font: "YourFont.pf2"
+title-color: "#00f0ff"
+desktop-image: "background.png"
+desktop-color: "#000000"
+
++ boot_menu {
+    left = 20%
+    top = 40%
+    width = 60%
+    height = 35%
+    item_height = 30
+    font = "YourFont.pf2"
+    color = "#ffffff"
+    selected_color = "#00f0ff"
+    selected_bg_color = "#001f25"
+    highlight = yes
+}
+
++ progress_bar {
+    id = "__timeout__"
+    left = 20%
+    top = 80%
+    width = 60%
+    height = 10
+    fg_color = "#00f0ff"
+    bg_color = "#003640"
+}
