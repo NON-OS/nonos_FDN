@@ -26,3 +26,9 @@ initramfs.cpio.gz
 initramfs/bin/*
 *.cpio.gz
 
+
+# Ignore binaries
+initramfs/bin/*
+*.cpio.gz
+target/
+
