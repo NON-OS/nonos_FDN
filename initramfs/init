@@ -1,29 +1,169 @@
 #!/bin/busybox sh
 
-mount -t proc proc /proc
-mount -t sysfs sysfs /sys
-mount -t devtmpfs devtmpfs /dev
+# ███╗   ██╗ ██████╗ ███╗   ██╗  ██████╗ ███████╗
+# ████╗  ██║██╔═══██╗████╗  ██║ ██╔═══██╗██╔════╝
+# ██╔██╗ ██║██║   ██║██╔██╗ ██║ ██║   ██║███████╗
+# ██║╚██╗██║██║   ██║██║╚██╗██║ ██║   ██║╚════██║
+# ██║ ╚████║╚██████╔╝██║ ╚████║ ╚██████╔╝███████║
+# ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═══╝  ╚═════╝ ╚══════╝
+#         NØNOS :: INIT BOOT ENGINE (Dual-Profile)
 
-clear
-echo ""
-echo "[NØNOS] Secure Init Environment Ready"
-echo ""
+# === Colors ===
+C1="\033[38;2;0;180;255m"; C2="\033[38;2;0;220;255m"; C3="\033[38;2;0;255;255m"
+OK="\033[38;2;140;255;140m"; ERR="\033[38;2;255;80;80m"; NC="\033[0m"
 
-# Define glowing color gradient for top layer
-C1="\033[38;2;0;180;255m"
-C2="\033[38;2;0;220;255m"
-C3="\033[38;2;0;255;255m"
-NC="\033[0m"
+# === Visual FX ===
+spinner() {
+  local pid=$1 msg="$2" spin='|/-\\'; i=0
+  while kill -0 $pid 2>/dev/null; do
+    i=$(((i + 1) % 4))
+    printf "\r${C3}  » $msg ${spin:$i:1} ${NC}"
+    sleep 0.08
+  done
+  printf "\r${OK}  ✔ $msg ${NC}\n"
+}
 
-echo -e "${C1} ███╗   ██╗ ${C2}██████╗ ${C3} ███╗   ██╗ ${C1}██████╗ ${C2}███████╗"
-echo -e "${C2} ████╗  ██║${C3}██╔═══██╗${C1}████╗  ██║${C2}██╔═══██╗${C3}██╔════╝"
-echo -e "${C3} ██╔██╗ ██║${C1}██║   ██║${C2}██╔██╗ ██║${C3}██║   ██║${C1}███████╗"
-echo -e "${C1} ██║╚██╗██║${C2}██║   ██║${C3}██║╚██╗██║${C1}██║   ██║${C2}╚════██║"
-echo -e "${C2} ██║ ╚████║${C3}╚██████╔╝${C1}██║ ╚████║${C2}╚██████╔╝${C3}███████║"
-echo -e "${C3} ╚═╝  ╚═══╝ ${C1}╚═════╝ ${C2} ╚═╝  ╚═══╝ ${C3}╚═════╝ ${C1}╚══════╝${NC}"
+progress_bar() {
+  w=30; printf "${C1}["
+  for _ in $(seq 1 $w); do printf "${C2}█"; sleep 0.004; done
+  printf "${C1}]${NC}\n"
+}
 
-echo ""
-echo "[NØNOS INIT] Dropping to shell..."
-echo ""
+# === Banner ===
+banner() {
+  clear
+  echo -e "${C1}"
+  echo ' ███╗   ██╗ ██████╗ ███╗   ██╗  ██████╗ ███████╗'
+  echo -e "${C2} ████╗  ██║██╔═══██╗████╗  ██║ ██╔═══██╗██╔════╝"
+  echo -e "${C3} ██╔██╗ ██║██║   ██║██╔██╗ ██║ ██║   ██║███████╗"
+  echo -e "${C1} ██║╚██╗██║██║   ██║██║╚██╗██║ ██║   ██║╚════██║"
+  echo -e "${C2} ██║ ╚████║╚██████╔╝██║ ╚████║ ╚██████╔╝███████║"
+  echo -e "${C3} ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═══╝  ╚═════╝ ╚══════╝${NC}"
+  echo -e "${C2} Stateless Terminal OS · Sovereign Boot Selector${NC}\n"
+}
 
-exec /bin/sh
+# === Utilities ===
+step()  { echo -e "${C2}  • $1${NC}"; }
+ok()    { echo -e "${OK}  ✔ $1${NC}"; }
+fail()  { echo -e "${ERR}  ✘ $1${NC}"; }
+
+# === System Setup ===
+mount_fs() {
+  step "Mounting core filesystems..."
+  mount -t proc proc /proc
+  mount -t sysfs sysfs /sys
+  mount -t devtmpfs devtmpfs /dev
+  mkdir -p /dev/pts
+  mount -t devpts devpts /dev/pts
+  ok "System mounted"
+}
+
+entropy() {
+  step "Seeding entropy..."
+  if [ -c /dev/hwrng ]; then
+    dd if=/dev/hwrng of=/dev/urandom bs=1 count=64 2>/dev/null
+    ok "Seeded from /dev/hwrng"
+  else
+    fail "Hardware RNG not present"
+  fi
+}
+
+mac_spoof() {
+  step "Spoofing MAC address..."
+  iface=$(ip link | awk -F: '$0 !~ "lo|vir|^[^0-9]"{print $2;getline}' | head -n1)
+  if [ "$iface" ]; then
+    mac=$(hexdump -n6 -e '6/1 ":%02X"' /dev/urandom | sed 's/^://')
+    ifconfig "$iface" down
+    ifconfig "$iface" hw ether "$mac"
+    ifconfig "$iface" up
+    ok "MAC spoofed on $iface → $mac"
+  else
+    fail "No active interface found"
+  fi
+}
+
+net_up() {
+  step "Configuring network..."
+  (
+    iface=$(ip link | awk -F: '$0 !~ "lo|vir|^[^0-9]"{print $2;getline}' | head -n1)
+    if [ "$iface" ]; then
+      ifconfig "$iface" up
+      udhcpc -q -t 3 -i "$iface" >/dev/null 2>&1
+    fi
+  ) &
+  spinner $! "Network interface online"
+}
+
+relay_init() {
+  step "Bootstrapping relay mesh..."
+  if [ -x /bin/anon ]; then
+    /bin/anon --config /etc/anon.conf >/dev/null 2>&1 &
+    sleep 2
+    ok "Relay mesh active"
+  else
+    fail "Relay binary missing at /bin/anon"
+  fi
+}
+
+launch_cli() {
+  step "Launching NØNOS CLI..."
+  if [ -x /bin/nonosctl ]; then
+    /bin/nonosctl
+  else
+    fail "nonosctl not found"
+  fi
+}
+
+final_msg() {
+  echo ""
+  step "Finalizing boot..."
+  progress_bar
+  ok "Environment ready"
+  echo -e "${C3}\nWelcome to NØNOS — Ephemeral Sovereignty Booted${NC}"
+  echo -e "${C2}Type 'help' to explore, or use 'nonosctl'.${NC}\n"
+}
+
+# === Profile Logic ===
+boot_selector() {
+  echo -e "${C2}Choose Boot Profile:${NC}"
+  echo -e "${C1}  [1] ZeroState     ${NC}- Ephemeral / Memory-only"
+  echo -e "${C1}  [2] NØNOS OS      ${NC}- Encrypted persistent (TBD)"
+  echo ""
+  read -p "  > " mode
+  echo ""
+}
+
+boot_zerostate() {
+  banner
+  mount_fs
+  entropy
+  mac_spoof
+  net_up
+  relay_init
+  final_msg
+  launch_cli
+  exec /bin/sh
+}
+
+boot_nonos_os() {
+  banner
+  mount_fs
+  entropy
+  mac_spoof
+  net_up
+  relay_init
+  step "Persistent LUKS & storage features not yet implemented."
+  final_msg
+  launch_cli
+  exec /bin/sh
+}
+
+# === Boot Execution ===
+banner
+boot_selector
+
+case "$mode" in
+  1) boot_zerostate ;;
+  2) boot_nonos_os ;;
+  *) echo -e "${ERR}Invalid input — defaulting to ZeroState${NC}"; boot_zerostate ;;
+esac

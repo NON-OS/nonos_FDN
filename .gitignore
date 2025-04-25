@@ -21,3 +21,8 @@ nonos.iso
 initramfs.cpio.gz
 *.img
 *.bin
+
+# Ignore built binaries
+initramfs/bin/*
+*.cpio.gz
+
