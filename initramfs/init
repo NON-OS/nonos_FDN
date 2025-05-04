@@ -6,7 +6,7 @@
 # ██║╚██╗██║██║   ██║██║╚██╗██║ ██║   ██║╚════██║
 # ██║ ╚████║╚██████╔╝██║ ╚████║ ╚██████╔╝███████║
 # ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═══╝  ╚═════╝ ╚══════╝
-#         NØNOS :: INIT BOOT ENGINE (Dual-Profile)
+#        NØNOS :: INIT BOOT ENGINE (Dual-Profile)
 
 # === Colors ===
 C1="\033[38;2;0;180;255m"; C2="\033[38;2;0;220;255m"; C3="\033[38;2;0;255;255m"
@@ -20,7 +20,7 @@ spinner() {
     printf "\r${C3}  » $msg ${spin:$i:1} ${NC}"
     sleep 0.08
   done
-  printf "\r${OK}  ✔ $msg ${NC}\n"
+  printf "\r${OK}  ✔️ $msg ${NC}\n"
 }
 
 progress_bar() {
@@ -44,7 +44,7 @@ banner() {
 
 # === Utilities ===
 step()  { echo -e "${C2}  • $1${NC}"; }
-ok()    { echo -e "${OK}  ✔ $1${NC}"; }
+ok()    { echo -e "${OK}  ✔️ $1${NC}"; }
 fail()  { echo -e "${ERR}  ✘ $1${NC}"; }
 
 # === System Setup ===
@@ -114,6 +114,15 @@ launch_cli() {
   fi
 }
 
+launch_ui() {
+  step "Launching NØNOS UI..."
+  if [ -x /bin/nonos-ui ]; then
+    /bin/nonos-ui
+  else
+    fail "nonos-ui not found"
+  fi
+}
+
 final_msg() {
   echo ""
   step "Finalizing boot..."
@@ -123,7 +132,7 @@ final_msg() {
   echo -e "${C2}Type 'help' to explore, or use 'nonosctl'.${NC}\n"
 }
 
-# === Profile Logic ===
+# === Boot Profiles ===
 boot_selector() {
   echo -e "${C2}Choose Boot Profile:${NC}"
   echo -e "${C1}  [1] ZeroState     ${NC}- Ephemeral / Memory-only"
@@ -141,7 +150,7 @@ boot_zerostate() {
   net_up
   relay_init
   final_msg
-  launch_cli
+  launch_ui || launch_cli
   exec /bin/sh
 }
 
@@ -154,11 +163,10 @@ boot_nonos_os() {
   relay_init
   step "Persistent LUKS & storage features not yet implemented."
   final_msg
-  launch_cli
+  launch_ui || launch_cli
   exec /bin/sh
 }
-
-# === Boot Execution ===
+# === Boot Start ===
 banner
 boot_selector
 
