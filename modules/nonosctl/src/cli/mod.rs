@@ -1,3 +1,8 @@
-pub fn run() {
-    println!("[CLI] Interface ready.");
-}
+pub mod command;
+pub mod deploy;
+pub mod init;
+pub mod keygen;
+pub mod relay;
+pub mod status;
+pub mod zk;
+

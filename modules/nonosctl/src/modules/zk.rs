@@ -1,3 +1,3 @@
-pub fn verify() {
-    println!("[ZK] Zero-Knowledge Proof verified.");
+pub fn run(command: &str) {
+    println!("[zk] received: {}", command);
 }

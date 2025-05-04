@@ -1,3 +1,3 @@
-pub fn profile() {
-    println!("[USER] Identity: zero-state | permissions: rootless");
+pub fn run(command: &str) {
+    println!("[user] received: {}", command);
 }

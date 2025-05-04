@@ -1,0 +1,47 @@
+#!/bin/bash
+
+echo "==========[ NØNOS FIX SCRIPT ]=========="
+echo "Scanning and patching nonosctl CLI..."
+
+# 1. Fix async fn run signatures
+echo "→ Fixing async run signatures..."
+find ./src -name '*.rs' | while read -r file; do
+    if grep -qE 'pub async fn run\s*\(command:\s*&str\)\s*{' "$file"; then
+        echo "   [fix] $file"
+        sed -i 's/pub async fn run\s*(command:\s*&str)\s*{/pub async fn run(command: &str) -> Result<(), Box<dyn std::error::Error>> {/' "$file"
+    fi
+done
+
+# 2. Ensure mod.rs files declare all modules
+echo "→ Ensuring mod declarations..."
+declare -A MODULE_MAP=(
+  ["src/modules/mod.rs"]="deploy fs net relay sys user zk"
+  ["src/cli/mod.rs"]="dispatch"
+  ["src/plugins/mod.rs"]="manager"
+  ["src/utils/mod.rs"]="logger"
+)
+
+for file in "${!MODULE_MAP[@]}"; do
+    if [ -f "$file" ]; then
+        echo "   [mod.rs] $file"
+        mods=${MODULE_MAP[$file]}
+        for m in $mods; do
+            grep -q "pub mod $m;" "$file" || echo "pub mod $m;" >> "$file"
+        done
+    fi
+done
+
+# 3. Fix plugin return if needed
+echo "→ Patching plugin::manager..."
+PLUGIN_FILE="src/plugins/mod.rs"
+if [ -f "$PLUGIN_FILE" ]; then
+    sed -i 's/pub fn manager()/pub fn manager() -> Result<(), Box<dyn std::error::Error>>/' "$PLUGIN_FILE"
+fi
+
+# 4. Optional: Fix unused imports and replace internal use statements
+echo "→ Checking for unused or broken imports..."
+find ./src -name '*.rs' | while read -r file; do
+    sed -i 's/use crate::modules/use crate::modules::/' "$file"
+done
+
+echo "✅ Done. Now try: cargo build --release"

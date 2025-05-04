@@ -1,3 +1,3 @@
-pub fn push(file: &str) {
-    println!("[DEPLOY] Deploying package: {}", file);
+pub async fn run(command: &str) {
+    println!("[deploy] received: {}", command);
 }

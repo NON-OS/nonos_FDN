@@ -1,3 +1,3 @@
-pub fn tree() {
-    println!("[FS] Displaying filesystem tree...");
+pub fn run(command: &str) {
+    println!("[fs] received: {}", command);
 }

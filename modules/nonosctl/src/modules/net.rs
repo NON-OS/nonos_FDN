@@ -1,3 +1,3 @@
-pub fn status() {
-    println!("[NET] Relay mesh status: Active.");
+pub fn run(command: &str) {
+    println!("[net] received: {}", command);
 }

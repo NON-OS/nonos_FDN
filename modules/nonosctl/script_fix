@@ -1,0 +1,55 @@
+#!/bin/bash
+
+echo "[FIX] Scanning and patching NØNOS modules..."
+
+fix_fn() {
+    FILE="$1"
+    if grep -q '^pub async run' "$FILE"; then
+        sed -i 's/^pub async run/pub async fn run/' "$FILE"
+        echo "[FIXED] async fn in $FILE"
+    fi
+
+    if grep -q '^async run' "$FILE"; then
+        sed -i 's/^async run/async fn run/' "$FILE"
+        echo "[FIXED] added fn to async in $FILE"
+    fi
+
+    if grep -q '^pub run' "$FILE"; then
+        sed -i 's/^pub run/pub fn run/' "$FILE"
+        echo "[FIXED] pub fn in $FILE"
+    fi
+
+    if grep -q '^run' "$FILE"; then
+        sed -i 's/^run/fn run/' "$FILE"
+        echo "[FIXED] fn added in $FILE"
+    fi
+
+    if grep -q '^pub generate' "$FILE"; then
+        sed -i 's/^pub generate/pub fn generate/' "$FILE"
+        echo "[FIXED] pub fn generate in $FILE"
+    fi
+
+    if grep -q '^generate' "$FILE"; then
+        sed -i 's/^generate/fn generate/' "$FILE"
+        echo "[FIXED] fn generate in $FILE"
+    fi
+
+    if grep -q '^pub check' "$FILE"; then
+        sed -i 's/^pub check/pub fn check/' "$FILE"
+        echo "[FIXED] pub fn check in $FILE"
+    fi
+
+    if grep -q '^check' "$FILE"; then
+        sed -i 's/^check/fn check/' "$FILE"
+        echo "[FIXED] fn check in $FILE"
+    fi
+}
+
+# Walk through all .rs files in known module dirs
+for MODULE in cli modules plugins; do
+    for FILE in src/$MODULE/*.rs; do
+        [ -f "$FILE" ] && fix_fn "$FILE"
+    done
+done
+
+echo "[DONE] All module functions patched. Now: cargo build --release"
