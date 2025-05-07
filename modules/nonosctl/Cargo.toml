@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
 colored = "2.0"
 clap = { version = "4.3", features = ["derive"] }
 tokio = { version = "1.38", features = ["full"] }

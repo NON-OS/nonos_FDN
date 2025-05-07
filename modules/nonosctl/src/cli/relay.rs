@@ -1,3 +1,14 @@
-pub async fn run(_command: &str) {
-    println!("[relay] received: {}", _command);
+pub async fn run(command: &str) {
+    match command {
+        "start" => {
+            println!("Starting encrypted relay node...");
+            // Relay start logic
+        }
+        "stop" => {
+            println!("Stopping relay...");
+        }
+        _ => {
+            eprintln!("Unknown relay command: {}", command);
+        }
+    }
 }

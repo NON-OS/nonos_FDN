@@ -1,3 +1,11 @@
-pub async fn run(_command: &str) {
-    println!("[deploy] received: {}", _command);
+pub async fn run(command: &str) -> Result<(), Box<dyn std::error::Error>> {
+    match command {
+        "deploy" => {
+            println!("Deploying payload...");
+            // logic here
+        },
+        _ => println!("Unknown deploy command"),
+    }
+    Ok(())
 }
+

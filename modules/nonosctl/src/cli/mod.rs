@@ -1,3 +1,5 @@
+pub mod fs;
+pub mod net;
 pub mod command;
 pub mod deploy;
 pub mod init;

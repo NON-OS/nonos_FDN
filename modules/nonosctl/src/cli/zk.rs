@@ -1,3 +1,13 @@
-pub async fn run(_command: &str) {
-    println!("[zk] received: {}", _command);
+pub async fn run(command: &str) {
+    match command {
+        "prove" => {
+            println!("Generating ZK proof...");
+        }
+        "verify" => {
+            println!("Verifying proof...");
+        }
+        _ => {
+            eprintln!("Unknown zk command: {}", command);
+        }
+    }
 }

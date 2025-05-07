@@ -1,3 +1,3 @@
 pub fn run() {
-    println!("[plugins] manager running...");
+    println!("Plugin manager running (stub)");
 }

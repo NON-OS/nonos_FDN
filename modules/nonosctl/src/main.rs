@@ -4,8 +4,7 @@ mod plugins;
 mod utils;
 
 use clap::{Parser, Subcommand};
-use cli::{command::*, deploy, init, keygen, relay, status, zk};
-use colored::*;
+use cli::{deploy, init, keygen, relay, status, zk};
 
 #[derive(Parser)]
 #[command(name = "nonosctl", about = "NØNOS Command-Line Interface", version)]
@@ -26,16 +25,34 @@ enum Commands {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Init => init::run().await,
-        Commands::Relay => relay::run("relay").await,
+        Commands::Init => {
+            init::run().await;
+            Ok(())
+        }
+        Commands::Relay => {
+            relay::run("relay").await;
+            Ok(())
+        }
         Commands::Deploy => deploy::run("deploy").await,
-        Commands::Zk => zk::run("zk").await,
-        Commands::Keygen => keygen::generate(),
-        Commands::Status => status::check(),
-        Commands::Plugins => plugins::manager::run(),
+        Commands::Zk => {
+            zk::run("zk").await;
+            Ok(())
+        }
+        Commands::Keygen => {
+            keygen::generate();
+            Ok(())
+        }
+        Commands::Status => {
+            status::check();
+            Ok(())
+        }
+        Commands::Plugins => {
+            plugins::manager::run();
+            Ok(())
+        }
     }
 }
