@@ -1,0 +1,44 @@
+--- a/security/Kconfig
++++ b/security/Kconfig
+@@ -4,7 +4,38 @@
+ 
+ menu "Security options"
+ 
++config NONOS_HARDENING
++	bool "NØNOS Kernel Hardening"
++	select CC_STACKPROTECTOR_STRONG
++	select VMAP_STACK
++	select HARDENED_USERCOPY
++	select STATIC_USERMODEHELPER
++	default y
++	help
++	  Enable all NØNOS-specific kernel hardening features
++
++config NONOS_ZERO_STATE
++	bool "Ephemeral Memory Mode"
++	depends on NONOS_HARDENING
++	default y
++	help
++	  Enable zero-persistent memory operations
++
++config NONOS_RELAY_NET
++	bool "Anonymous Relay Networking"
++	depends on NET && NONOS_HARDENING
++	default y
++	help
++	  Enable NØNOS relay network stack
++
++config NONOS_NO_BROWSER
++	bool "Disable all browser-related subsystems"
++	default y
++	help
++	  Remove all browser/HTTP stack components
++
+ source "security/keys/Kconfig"
+ 
+ config SECURITY
+ 	bool "Enable different security models"
++
+ config SECURITY_DMESG_RESTRICT
+ 	bool "Restrict unprivileged access to the kernel syslog"
+ 	default n

@@ -145,13 +145,13 @@ final_msg() {
   echo -e "${C2}Type 'help' to explore, or use 'nonosctl'.${NC}\n"
 }
 
-# === Boot Profiles ===
 boot_selector() {
   echo -e "${C2}Choose Boot Profile:${NC}"
   echo -e "${C1}  [1] ZeroState     ${NC}- Ephemeral / Memory-only"
   echo -e "${C1}  [2] NØNOS OS      ${NC}- Encrypted persistent (TBD)"
   echo ""
-  read -p "  > " mode
+  echo -n "  > "
+  read mode < /dev/tty
   echo ""
 }
 
@@ -163,7 +163,8 @@ boot_zerostate() {
   net_up
   relay_init
   final_msg
-  launch_ui || launch_cli
+  launch_ui
+  launch_cli
   exec /bin/sh
 }
 
@@ -176,9 +177,11 @@ boot_nonos_os() {
   relay_init
   step "Persistent LUKS & storage features not yet implemented."
   final_msg
-  launch_ui || launch_cli
+  launch_ui
+  launch_cli
   exec /bin/sh
 }
+
 # === Boot Start ===
 banner
 boot_selector
